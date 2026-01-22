@@ -1,45 +1,64 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { 
-  validateNameOrLocation, 
-  normalizeText, 
-  type FormData, 
-  type FormErrors, 
-  type TouchedFields 
-} from '../../lib/validation';
-import { submitPhaseOne, saveToLocalStorage } from '../../lib/api';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import {
+  validateNameOrLocation,
+  normalizeText,
+  type FormData,
+  type FormErrors,
+  type TouchedFields,
+} from "../../lib/validation";
+import { submitPhaseOne, saveToLocalStorage } from "../../lib/api";
 
 export default function EnterPage() {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
-    name: '',
-    location: ''
+    name: "",
+    location: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<TouchedFields>({
     name: false,
-    location: false
+    location: false,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
+  // Prefill form data from localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("skinstric.phase1");
+      if (saved) {
+        const parsedData = JSON.parse(saved);
+        if (parsedData && typeof parsedData.name === "string" && typeof parsedData.location === "string") {
+          setFormData({
+            name: parsedData.name,
+            location: parsedData.location,
+          });
+        }
+      }
+    } catch (error) {
+      // Silently ignore parsing errors
+      console.error("Failed to parse localStorage data:", error);
+    }
+  }, []);
+
   const validateField = (field: keyof FormData, value: string) => {
     const error = validateNameOrLocation(value);
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
-      [field]: error
+      [field]: error,
     }));
     return !error;
   };
 
   const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
-    
+
     // Validate in real-time if field has been touched or submit attempted
     if (touched[field] || submitAttempted) {
       validateField(field, value);
@@ -47,52 +66,46 @@ export default function EnterPage() {
   };
 
   const handleBlur = (field: keyof FormData) => {
-    setTouched(prev => ({
+    setTouched((prev) => ({
       ...prev,
-      [field]: true
+      [field]: true,
     }));
     validateField(field, formData[field]);
   };
 
-  const isFormValid = () => {
-    const nameValid = !validateNameOrLocation(formData.name);
-    const locationValid = !validateNameOrLocation(formData.location);
-    return nameValid && locationValid;
-  };
+  const isFormValid = !errors.name && !errors.location;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitAttempted(true);
-    
+
     // Validate all fields
-    const nameValid = validateField('name', formData.name);
-    const locationValid = validateField('location', formData.location);
-    
+    const nameValid = validateField("name", formData.name);
+    const locationValid = validateField("location", formData.location);
+
     if (!nameValid || !locationValid || isLoading) {
       return;
     }
 
     setIsLoading(true);
-    
+
     try {
       const normalizedData = {
         name: normalizeText(formData.name),
-        location: normalizeText(formData.location)
+        location: normalizeText(formData.location),
       };
-      
+
       const result = await submitPhaseOne(normalizedData);
-      
-      if (result.success) {
-        saveToLocalStorage('skinstric.phase1', normalizedData);
-        router.push('/testing');
+
+      if (result) {
+        saveToLocalStorage("skinstric.phase1", normalizedData);
+        router.push("/testing");
       } else {
-        // Handle API error - you might want to show this error to the user
-        console.error('API Error:', result.error);
-        alert('An error occurred. Please try again.');
+        alert("An error occurred. Please try again.");
       }
     } catch (error) {
-      console.error('Unexpected error:', error);
-      alert('An unexpected error occurred. Please try again.');
+      console.error("Unexpected error:", error);
+      alert("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -102,55 +115,69 @@ export default function EnterPage() {
     return (touched[field] || submitAttempted) && errors[field];
   };
 
-  const isButtonDisabled = !isFormValid() || isLoading;
+  const isButtonDisabled = !isFormValid || isLoading;
 
   return (
-    <form className="form-container" onSubmit={handleSubmit}>
-      <h1 className="form-title">Phase 1</h1>
-      
-      <div className="input-group">
-        <label htmlFor="name" className="input-label">
-          Your name
-        </label>
-        <input
-          id="name"
-          type="text"
-          value={formData.name}
-          onChange={(e) => handleInputChange('name', e.target.value)}
-          onBlur={() => handleBlur('name')}
-          className={`input-field ${shouldShowError('name') ? 'error' : ''}`}
-          disabled={isLoading}
-        />
-        {shouldShowError('name') && (
-          <span className="error-text">{errors.name}</span>
-        )}
-      </div>
+    <section className="enter">
+      <div className="enter-card">
+        <header className="enter-header">
+          <h1 className="enter-title">Let’s get started</h1>
+          <p className="enter-subtitle">
+            Enter your name and location to begin.
+          </p>
+        </header>
 
-      <div className="input-group">
-        <label htmlFor="location" className="input-label">
-          Your location
-        </label>
-        <input
-          id="location"
-          type="text"
-          value={formData.location}
-          onChange={(e) => handleInputChange('location', e.target.value)}
-          onBlur={() => handleBlur('location')}
-          className={`input-field ${shouldShowError('location') ? 'error' : ''}`}
-          disabled={isLoading}
-        />
-        {shouldShowError('location') && (
-          <span className="error-text">{errors.location}</span>
-        )}
-      </div>
+        <form className="enter-form" onSubmit={handleSubmit}>
+          <label className="field">
+            <span className="field-label">Name</span>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => handleInputChange("name", e.target.value)}
+              onBlur={() => handleBlur("name")}
+              className={`field-input ${shouldShowError("name") ? "error" : ""}`}
+              disabled={isLoading}
+            />
+            {shouldShowError("name") && (
+              <span className="field-error">{errors.name}</span>
+            )}
+          </label>
 
-      <button
-        type="submit"
-        disabled={isButtonDisabled}
-        className="primary-button"
-      >
-        {isLoading ? 'Submitting…' : 'Proceed'}
-      </button>
-    </form>
+          <label className="field">
+            <span className="field-label">Location</span>
+            <input
+              type="text"
+              value={formData.location}
+              onChange={(e) => handleInputChange("location", e.target.value)}
+              onBlur={() => handleBlur("location")}
+              className={`field-input ${shouldShowError("location") ? "error" : ""}`}
+              disabled={isLoading}
+            />
+            {shouldShowError("location") && (
+              <span className="field-error">{errors.location}</span>
+            )}
+          </label>
+
+          <div className="enter-actions">
+            <button
+              type="button"
+              className="button button-secondary"
+              onClick={() => router.push("/")}
+              disabled={isLoading}
+            >
+              Back
+            </button>
+
+            <button
+              type="submit"
+              className="button button-primary"
+              disabled={isButtonDisabled}
+            >
+              {isLoading ? "Submitting…" : "Proceed"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
   );
 }

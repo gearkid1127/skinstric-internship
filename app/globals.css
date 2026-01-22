@@ -1,4 +1,7 @@
-/* CSS Reset */
+/* ===================== */
+/* Reset + Base */
+/* ===================== */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -13,7 +16,10 @@ body {
   height: 100%;
 }
 
-/* App Layout Classes */
+/* ===================== */
+/* App Layout */
+/* ===================== */
+
 .app-container {
   display: flex;
   flex-direction: column;
@@ -48,7 +54,21 @@ body {
   align-items: center;
 }
 
-/* Hero Section */
+/* ===================== */
+/* Shared Components */
+/* ===================== */
+
+/* Buttons */
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===================== */
+/* Home Page */
+/* ===================== */
+
+/* Hero */
 .hero {
   flex: 1;
   display: flex;
@@ -99,7 +119,11 @@ body {
   transform: scale(0.98);
 }
 
-/* Form Styles */
+/* ===================== */
+/* Enter Page */
+/* ===================== */
+
+/* Form Layout */
 .form-container {
   max-width: 28rem;
   width: 100%;
@@ -116,6 +140,7 @@ body {
   margin-bottom: 0.5rem;
 }
 
+/* Inputs */
 .input-group {
   display: flex;
   flex-direction: column;
@@ -151,6 +176,7 @@ body {
   margin-top: 0.25rem;
 }
 
+/* Primary Button (Enter form submit) */
 .primary-button {
   padding: 0.85rem 1.5rem;
   background: #111;
