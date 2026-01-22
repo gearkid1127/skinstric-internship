@@ -1,7 +1,7 @@
 export default function EnterPage() {
   return (
-    <main>
+    <div>
       <h1>Phase 1</h1>
-    </main>
+    </div>
   );
 }

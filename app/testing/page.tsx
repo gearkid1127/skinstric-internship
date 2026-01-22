@@ -1,7 +1,7 @@
 export default function TestingPage() {
   return (
-    <main>
+    <div>
       <h1>To start analysis</h1>
-    </main>
+    </div>
   );
 }

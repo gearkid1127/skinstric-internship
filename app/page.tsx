@@ -1,7 +1,7 @@
 export default function HomePage() {
   return (
-    <main>
+    <div>
       <h1>Sophisticated skincare</h1>
-    </main>
+    </div>
   );
 }
