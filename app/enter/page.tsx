@@ -1,182 +1,200 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  validateNameOrLocation,
   normalizeText,
+  validateNameOrLocation,
   type FormData,
   type FormErrors,
-  type TouchedFields,
 } from "../../lib/validation";
 import { submitPhaseOne, saveToLocalStorage } from "../../lib/api";
 
+type StepKey = "name" | "location";
+
+type Step = {
+  key: StepKey;
+  placeholder: string; // this is the big input text on the real site
+};
+
+const STORAGE_KEY = "skinstric.phase1";
+
+const initialFormData: FormData = {
+  name: "",
+  location: "",
+};
+
 export default function EnterPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState<FormData>({
-    name: "",
-    location: "",
-  });
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState<TouchedFields>({
-    name: false,
-    location: false,
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
-  // Prefill form data from localStorage
-  useEffect(() => {
+  const steps = useMemo<Step[]>(
+    () => [
+      { key: "name", placeholder: "Introduce Yourself" },
+      { key: "location", placeholder: "Where are you from?" },
+    ],
+    [],
+  );
+
+  const [stepIndex, setStepIndex] = useState(0);
+
+  // Lazy init so we only touch localStorage in the browser
+  const [formData, setFormData] = useState<FormData>(() => {
+    if (typeof window === "undefined") return initialFormData;
+
     try {
-      const saved = localStorage.getItem("skinstric.phase1");
-      if (saved) {
-        const parsedData = JSON.parse(saved);
-        if (parsedData && typeof parsedData.name === "string" && typeof parsedData.location === "string") {
-          setFormData({
-            name: parsedData.name,
-            location: parsedData.location,
-          });
-        }
-      }
-    } catch (error) {
-      // Silently ignore parsing errors
-      console.error("Failed to parse localStorage data:", error);
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return initialFormData;
+
+      const parsed = JSON.parse(saved) as Partial<FormData>;
+      return { ...initialFormData, ...parsed };
+    } catch {
+      return initialFormData;
     }
+  });
+
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  const currentStep = steps[stepIndex];
+  const currentKey = currentStep.key;
+  const currentValue = formData[currentKey];
+  const currentError = errors[currentKey];
+
+  // Focus the input when step changes
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [stepIndex]);
+
+  const setValueForStep = useCallback((key: StepKey, value: string) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
   }, []);
 
-  const validateField = (field: keyof FormData, value: string) => {
-    const error = validateNameOrLocation(value);
-    setErrors((prev) => ({
-      ...prev,
-      [field]: error,
-    }));
-    return !error;
-  };
+  const validateStep = useCallback(
+    (key: StepKey) => {
+      const value = formData[key];
+      const error = validateNameOrLocation(value);
+      setErrors((prev) => ({ ...prev, [key]: error }));
+      return !error;
+    },
+    [formData],
+  );
 
-  const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-
-    // Validate in real-time if field has been touched or submit attempted
-    if (touched[field] || submitAttempted) {
-      validateField(field, value);
+  const handleBack = useCallback(() => {
+    if (stepIndex === 0) {
+      router.push("/");
+      return;
     }
-  };
+    setStepIndex((prev) => Math.max(0, prev - 1));
+  }, [router, stepIndex]);
 
-  const handleBlur = (field: keyof FormData) => {
-    setTouched((prev) => ({
-      ...prev,
-      [field]: true,
-    }));
-    validateField(field, formData[field]);
-  };
+  const handleNext = useCallback(async () => {
+    const key = currentStep.key;
 
-  const isFormValid = !errors.name && !errors.location;
+    if (!validateStep(key)) return;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitAttempted(true);
-
-    // Validate all fields
-    const nameValid = validateField("name", formData.name);
-    const locationValid = validateField("location", formData.location);
-
-    if (!nameValid || !locationValid || isLoading) {
+    // go to next step
+    if (stepIndex < steps.length - 1) {
+      setStepIndex((prev) => prev + 1);
       return;
     }
 
+    // final submit
     setIsLoading(true);
 
-    try {
-      const normalizedData = {
-        name: normalizeText(formData.name),
-        location: normalizeText(formData.location),
-      };
+    const normalized: FormData = {
+      name: normalizeText(formData.name),
+      location: normalizeText(formData.location),
+    };
 
-      const result = await submitPhaseOne(normalizedData);
+    const result = await submitPhaseOne(normalized);
 
-      if (result) {
-        saveToLocalStorage("skinstric.phase1", normalizedData);
-        router.push("/testing");
-      } else {
-        alert("An error occurred. Please try again.");
-      }
-    } catch (error) {
-      console.error("Unexpected error:", error);
-      alert("An unexpected error occurred. Please try again.");
-    } finally {
-      setIsLoading(false);
+    if (result) {
+      saveToLocalStorage(STORAGE_KEY, normalized);
+      router.push("/testing");
     }
-  };
 
-  const shouldShowError = (field: keyof FormData) => {
-    return (touched[field] || submitAttempted) && errors[field];
-  };
+    setIsLoading(false);
+  }, [currentStep.key, formData, router, stepIndex, steps, validateStep]);
 
-  const isButtonDisabled = !isFormValid || isLoading;
+  // Keyboard shortcuts
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        void handleNext();
+      }
+
+      if (e.key === "Escape") {
+        e.preventDefault();
+        handleBack();
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [handleBack, handleNext]);
 
   return (
     <section className="enter">
-      <div className="enter-card">
-        <header className="enter-header">
-          <h1 className="enter-title">Let’s get started</h1>
-          <p className="enter-subtitle">
-            Enter your name and location to begin.
+      <div className="enter-frame">
+        {/* rotating dotted frames */}
+        <div className="enter-rombus enter-rombus-1" aria-hidden="true" />
+        <div className="enter-rombus enter-rombus-2" aria-hidden="true" />
+        <div className="enter-rombus enter-rombus-3" aria-hidden="true" />
+
+        <p className="enter-kicker">TO START ANALYSIS</p>
+
+        <div className="enter-step-card" role="group" aria-label="Enter details">
+          <p className="enter-click">CLICK TO TYPE</p>
+
+          {/* The real site: THIS input is the big “question” */}
+          <input
+            ref={inputRef}
+            className="enter-input"
+            value={currentValue}
+            placeholder={currentStep.placeholder}
+            onChange={(e) => setValueForStep(currentKey, e.target.value)}
+            aria-invalid={Boolean(currentError)}
+            aria-describedby={currentError ? "enter-error" : undefined}
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
+          />
+
+          {currentError ? (
+            <p id="enter-error" className="enter-error">
+              {currentError}
+            </p>
+          ) : null}
+
+          <p className="enter-hint">
+            Press <span className="enter-hint-key">Enter</span> to continue
           </p>
-        </header>
 
-        <form className="enter-form" onSubmit={handleSubmit}>
-          <label className="field">
-            <span className="field-label">Name</span>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => handleInputChange("name", e.target.value)}
-              onBlur={() => handleBlur("name")}
-              className={`field-input ${shouldShowError("name") ? "error" : ""}`}
-              disabled={isLoading}
-            />
-            {shouldShowError("name") && (
-              <span className="field-error">{errors.name}</span>
-            )}
-          </label>
+          {/* keep for accessibility, but we’ll visually hide it in CSS */}
+          <button
+            type="button"
+            className="enter-next"
+            onClick={() => void handleNext()}
+            disabled={isLoading}
+            aria-label="Next"
+          >
+            Next
+          </button>
+        </div>
 
-          <label className="field">
-            <span className="field-label">Location</span>
-            <input
-              type="text"
-              value={formData.location}
-              onChange={(e) => handleInputChange("location", e.target.value)}
-              onBlur={() => handleBlur("location")}
-              className={`field-input ${shouldShowError("location") ? "error" : ""}`}
-              disabled={isLoading}
-            />
-            {shouldShowError("location") && (
-              <span className="field-error">{errors.location}</span>
-            )}
-          </label>
-
-          <div className="enter-actions">
-            <button
-              type="button"
-              className="button button-secondary"
-              onClick={() => router.push("/")}
-              disabled={isLoading}
-            >
-              Back
-            </button>
-
-            <button
-              type="submit"
-              className="button button-primary"
-              disabled={isButtonDisabled}
-            >
-              {isLoading ? "Submitting…" : "Proceed"}
-            </button>
-          </div>
-        </form>
+        <button
+          type="button"
+          className="enter-back"
+          onClick={handleBack}
+          aria-label="Back"
+        >
+          <span className="enter-back-diamond" aria-hidden="true">
+            <span className="enter-back-arrow" aria-hidden="true" />
+          </span>
+          <span className="enter-back-label">BACK</span>
+        </button>
       </div>
     </section>
   );
