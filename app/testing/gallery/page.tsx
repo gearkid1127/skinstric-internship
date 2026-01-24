@@ -1,3 +1,5 @@
+// ROUTE: /testing/gallery
+
 export default function GalleryPage() {
   return (
     <div style={{ textAlign: "center" }}>
