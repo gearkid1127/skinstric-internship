@@ -15,10 +15,14 @@ export default function TestingCameraPage() {
   const [errorMsg, setErrorMsg] = useState<string>("");
 
   const headline = useMemo(() => {
-    if (state === "preparing" || state === "analyzing") return "PREPARING YOUR ANALYSIS…";
+    if (state === "preparing" || state === "analyzing")
+      return "PREPARING YOUR ANALYSIS…";
     if (state === "captured") return "GREAT SHOT!";
     return "";
   }, [state]);
+
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [captureUrl, setCaptureUrl] = useState<string>("");
 
   const stopStream = () => {
     const stream = streamRef.current;
@@ -82,7 +86,9 @@ export default function TestingCameraPage() {
       const message = (err as { message?: string })?.message ?? "";
 
       if (name === "NotAllowedError" || name === "SecurityError") {
-        setErrorMsg("Camera permission was denied. Please allow access and try again.");
+        setErrorMsg(
+          "Camera permission was denied. Please allow access and try again.",
+        );
       } else if (name === "NotFoundError" || name === "OverconstrainedError") {
         setErrorMsg("No camera was found (or it’s unavailable).");
       } else {
@@ -109,15 +115,43 @@ export default function TestingCameraPage() {
   }, []);
 
   const onBack = () => {
+    setCaptureUrl("");
     stopStream();
     router.back();
   };
 
   const onRetry = () => {
+    setCaptureUrl("");
     setState("preparing");
   };
 
   const onTakePicture = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+
+    if (!video || !canvas) return;
+
+    const w = video.videoWidth || 1280;
+    const h = video.videoHeight || 720;
+
+    canvas.width = w;
+    canvas.height = h;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Mirror so it matches selfie preview
+    ctx.translate(w, 0);
+    ctx.scale(-1, 1);
+
+    ctx.drawImage(video, 0, 0, w, h);
+
+    const url = canvas.toDataURL("image/jpeg", 0.92);
+    setCaptureUrl(url);
+
+    // Optional: stop camera so it truly "freezes"
+    stopStream();
+
     setState("captured");
   };
 
@@ -134,8 +168,17 @@ export default function TestingCameraPage() {
     <section className="camera">
       {/* ALWAYS mounted stage (so videoRef exists during "preparing") */}
       <div className="camera-stage">
+        <canvas ref={canvasRef} style={{ display: "none" }} />
         <div className="camera-video" aria-label="Camera preview area">
           <video ref={videoRef} className="camera-video-el" />
+
+          {captureUrl && (
+            <img
+              src={captureUrl}
+              alt="Captured frame"
+              className="camera-capture-el"
+            />
+          )}
         </div>
 
         {/* PREPARING / ANALYZING overlay */}
@@ -160,7 +203,11 @@ export default function TestingCameraPage() {
               </p>
 
               <div className="camera-denied-actions">
-                <button type="button" className="camera-denied-btn" onClick={onRetry}>
+                <button
+                  type="button"
+                  className="camera-denied-btn"
+                  onClick={onRetry}
+                >
                   RETRY
                 </button>
                 <button
@@ -173,7 +220,8 @@ export default function TestingCameraPage() {
               </div>
 
               <p className="camera-denied-hint">
-                Tip: click the camera icon in your browser’s address bar and allow access.
+                Tip: click the camera icon in your browser’s address bar and
+                allow access.
               </p>
             </div>
           </div>
@@ -182,7 +230,11 @@ export default function TestingCameraPage() {
         {/* LIVE controls */}
         {state === "live" && (
           <>
-            <button type="button" className="camera-take" onClick={onTakePicture}>
+            <button
+              type="button"
+              className="camera-take"
+              onClick={onTakePicture}
+            >
               <span className="camera-take-text">TAKE PICTURE</span>
               <span className="camera-take-btn" aria-hidden="true">
                 <span className="camera-take-btn-inner" />
@@ -190,7 +242,9 @@ export default function TestingCameraPage() {
             </button>
 
             <div className="camera-tips">
-              <p className="camera-tips-title">TO GET BETTER RESULTS MAKE SURE TO HAVE</p>
+              <p className="camera-tips-title">
+                TO GET BETTER RESULTS MAKE SURE TO HAVE
+              </p>
               <ul className="camera-tips-list">
                 <li>◇ NEUTRAL EXPRESSION</li>
                 <li>◇ FRONTAL POSE</li>
@@ -198,7 +252,11 @@ export default function TestingCameraPage() {
               </ul>
             </div>
 
-            <button type="button" className="camera-nav camera-nav--left" onClick={onBack}>
+            <button
+              type="button"
+              className="camera-nav camera-nav--left"
+              onClick={onBack}
+            >
               <span className="camera-nav-diamond" aria-hidden="true">
                 <span className="camera-nav-arrow camera-nav-arrow--left" />
               </span>
@@ -213,7 +271,9 @@ export default function TestingCameraPage() {
             <p className="camera-greatshot">{headline}</p>
 
             <div className="camera-tips">
-              <p className="camera-tips-title">TO GET BETTER RESULTS MAKE SURE TO HAVE</p>
+              <p className="camera-tips-title">
+                TO GET BETTER RESULTS MAKE SURE TO HAVE
+              </p>
               <ul className="camera-tips-list">
                 <li>◇ NEUTRAL EXPRESSION</li>
                 <li>◇ FRONTAL POSE</li>
@@ -221,14 +281,22 @@ export default function TestingCameraPage() {
               </ul>
             </div>
 
-            <button type="button" className="camera-nav camera-nav--left" onClick={onBack}>
+            <button
+              type="button"
+              className="camera-nav camera-nav--left"
+              onClick={onBack}
+            >
               <span className="camera-nav-diamond" aria-hidden="true">
                 <span className="camera-nav-arrow camera-nav-arrow--left" />
               </span>
               <span className="camera-nav-label">BACK</span>
             </button>
 
-            <button type="button" className="camera-nav camera-nav--right" onClick={onProceed}>
+            <button
+              type="button"
+              className="camera-nav camera-nav--right"
+              onClick={onProceed}
+            >
               <span className="camera-nav-label">PROCEED</span>
               <span className="camera-nav-diamond" aria-hidden="true">
                 <span className="camera-nav-arrow camera-nav-arrow--right" />

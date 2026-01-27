@@ -1164,6 +1164,22 @@ body {
   margin-right: -0.1rem;
 }
 
+/* Mirror selfie preview */
+.camera-video-el {
+  transform: scaleX(-1);
+}
+
+/* Captured image overlay (freezes the frame) */
+.camera-capture-el {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+
 /* Responsive: tighten button spacing */
 @media (max-width: 48rem) {
   .camera-take {
