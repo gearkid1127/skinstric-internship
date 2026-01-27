@@ -16,7 +16,7 @@ export default function RootLayout({
       <body>
         <div className="app-container">
           <header className="app-header">
-            <div className="app-logo">SKINSTRIC</div>
+            <div className="app-logo">SKINSTRIC <span className="testing-kicker-bracket">[ INTRO ]</span></div>
             <div className="app-header-action">ENTER CODE</div>
           </header>
           <main className="page-content">{children}</main>

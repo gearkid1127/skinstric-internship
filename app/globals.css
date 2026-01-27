@@ -102,7 +102,9 @@ body {
   font-size: 0.95rem;
   text-decoration: none;
   cursor: pointer;
-  transition: background 200ms ease, transform 120ms ease;
+  transition:
+    background 200ms ease,
+    transform 120ms ease;
 }
 
 .hero-button:hover {
@@ -170,7 +172,9 @@ body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(0, 0, 0, 0.75);
-  transition: opacity 300ms ease, transform 300ms ease;
+  transition:
+    opacity 300ms ease,
+    transform 300ms ease;
 }
 
 .hero-diamond {
@@ -182,7 +186,10 @@ body {
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.65);
-  transition: transform 300ms ease, box-shadow 300ms ease, border-color 300ms ease;
+  transition:
+    transform 300ms ease,
+    box-shadow 300ms ease,
+    border-color 300ms ease;
 }
 
 .hero-diamond-arrow {
@@ -290,7 +297,7 @@ body {
 .enter-rombus-2 {
   width: clamp(17rem, 37vw, 33rem);
   height: clamp(17rem, 37vw, 33rem);
-  opacity: 0.50;
+  opacity: 0.5;
   animation: enter-spin-reverse 165s linear infinite;
 }
 
@@ -544,7 +551,6 @@ body {
   }
 }
 
-
 /* Small screens */
 @media (max-width: 48rem) {
   .enter-kicker {
@@ -579,7 +585,6 @@ body {
   }
 }
 
-
 /* ===================== */
 /* Testing Page Layout */
 /* ===================== */
@@ -602,14 +607,23 @@ body {
 /* Left-side kicker */
 .testing-kicker {
   position: absolute;
-  top: 6rem;
+  top: 4rem;
   left: 2.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  z-index: 2;
+
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.6);
-  z-index: 2;
+  color: rgba(0, 0, 0, 0.7);
 }
+
+.testing-kicker-bracket {
+  color: rgba(0, 0, 0, 0.45);
+}
+
 
 /* Center heading + options */
 .testing-center {
@@ -643,12 +657,11 @@ body {
   gap: var(--gap);
 }
 
-
 /* Button reset + sizing */
 .testing-choice {
   /* one source of truth */
   --tile: clamp(18rem, 28vw, 30.5rem);
-  --icon: calc(var(--tile) * 0.28); /* tweak 0.26–0.30 if needed */
+  --icon: calc(var(--tile) * 0.28);
 
   width: var(--tile);
   height: var(--tile);
@@ -661,16 +674,13 @@ body {
   display: grid;
   place-items: center;
 
-  /* defaults */
-  --label-align: left;
-  --label-items: flex-start;
+  /* callout geometry (icon-relative, stable) */
+  --callout-angle: 0deg;
+  --arm-start: 2.2rem;
+  --arm-len: 5.5rem;
+  --label-gap: 0.6rem;
+  --side: 1; /* 1 = label on right, -1 = label on left */
 }
-
-.testing-choice-icon svg {
-  width: var(--icon);
-  height: var(--icon);
-}
-
 
 /* Outer + inner diamond frames */
 .testing-choice-frame {
@@ -681,93 +691,106 @@ body {
   pointer-events: none;
 }
 
-
 @keyframes testing-spin {
-  from { transform: rotate(45deg); }
-  to   { transform: rotate(405deg); }
+  from {
+    transform: rotate(45deg);
+  }
+  to {
+    transform: rotate(405deg);
+  }
 }
 
 @keyframes testing-spin-reverse {
-  from { transform: rotate(45deg); }
-  to   { transform: rotate(-315deg); }
+  from {
+    transform: rotate(45deg);
+  }
+  to {
+    transform: rotate(-315deg);
+  }
 }
 
 /* outer frame rotation */
 .testing-choice-frame {
   animation: testing-spin 50s linear infinite;
-  opacity: 0.50;
+  opacity: 0.5;
 }
 
-/* inner frame: make it actually inset + opposite rotation */
+/* inner frame: inset + opposite rotation */
 .testing-choice-frame.testing-choice-frame-inner {
   inset: 12%;
   opacity: 0.7;
   animation: testing-spin-reverse 90s linear infinite;
 }
 
+/* ===================== */
+/* Icon + callout system */
+/* ===================== */
 
-
-/* Center icon */
 .testing-choice-icon {
   position: relative;
   z-index: 2;
+  width: var(--icon);
+  height: var(--icon);
   display: grid;
   place-items: center;
-  color: rgba(0, 0, 0, 0.9);
 }
 
-.testing-choice {
-  --callout-angle: 0deg;
-  --connector-start: calc(var(--icon) * 0.55);
-  --connector-len: calc(var(--icon) * 1.15);
-  --label-gap: 0.75rem;
+.testing-choice-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
-/* anchor everything from tile center */
+/* arm container (THIS was the missing piece: translate(-50%, -50%)) */
 .testing-choice-callout {
   position: absolute;
   left: 50%;
   top: 50%;
   width: 0;
   height: 0;
-  z-index: 3;
   pointer-events: none;
+  z-index: 4;
 
   transform: translate(-50%, -50%) rotate(var(--callout-angle));
   transform-origin: 0 0;
 }
 
-/* connector line */
+/* line */
 .testing-choice-connector {
-  position: absolute;
-  left: 0;
-  top: 0;
+  display: block;
+  position: relative;
   height: 1px;
-  width: var(--connector-len);
+  width: var(--arm-len);
   background: #1a1b1c;
-  transform: translateX(var(--connector-start));
+
+  transform: translateX(calc(var(--arm-start) * var(--side)))
+    scaleX(var(--side));
   transform-origin: 0% 50%;
 }
 
-/* dot */
+/* dot at the end */
 .testing-choice-connector::after {
   content: "";
   position: absolute;
-  left: 100%;
+  right: -0.2rem;
   top: 50%;
   width: 0.35rem;
   height: 0.35rem;
   border: 1px solid #1a1b1c;
   border-radius: 999px;
   background: #fff;
-  transform: translate(-50%, -50%);
+  transform: translateY(-50%);
 }
 
-/* label at end of line */
+/* label */
 .testing-choice-label {
   position: absolute;
-  left: calc(var(--connector-start) + var(--connector-len) + var(--label-gap));
   top: 0;
+
+  /* sit at end of line, on correct side */
+  left: calc(
+    (var(--arm-start) + var(--arm-len) + var(--label-gap)) * var(--side)
+  );
 
   display: flex;
   flex-direction: column;
@@ -780,29 +803,63 @@ body {
   line-height: 1.2;
   white-space: nowrap;
 
-  text-align: var(--label-align);
-  align-items: var(--label-items);
-
-  transform: translateY(-50%) rotate(calc(-1 * var(--callout-angle)));
+  /* keep label upright and also shift it left when side = -1
+     (side=1 => 0%, side=-1 => -100%) */
+  transform: translate(calc((var(--side) - 1) * 50%), -50%)
+    rotate(calc(-1 * var(--callout-angle)));
   transform-origin: left center;
 }
 
-/* directions */
+/* When the label is on the LEFT, rotate around the right edge */
+.testing__choice--gallery .testing-choice-label {
+  transform-origin: right center;
+}
+
+/* angles + sides */
 .testing__choice--camera {
   --callout-angle: -35deg;
-  --label-align: left;
-  --label-items: flex-start;
+  --side: 1;
 }
 
+/* ✅ Gallery: same arm, but label sits on the LEFT of the dot */
 .testing__choice--gallery {
-  --callout-angle: 215deg;
-  --label-align: right;
-  --label-items: flex-end;
+  /* this angle points down-left (matches the exemplar) */
+  --callout-angle: 145deg;
+
+  /* do NOT mirror the arm; rotation already gives correct direction */
+  --side: 1;
 }
 
+/* Put the label on the LEFT side of the arm end */
+.testing__choice--gallery .testing-choice-label {
+  left: calc(var(--arm-start) + var(--arm-len) + var(--label-gap));
 
+  /* shift the whole label box to the LEFT of that point */
+  transform: translate(-100%, -50%) rotate(calc(-1 * var(--callout-angle)));
 
+  transform-origin: right center;
+  text-align: right;
+  align-items: flex-end;
+}
 
+.testing-back {
+  position: absolute;
+  left: 2.25rem;
+  bottom: 2.5rem;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 6;
+}
+
+.testing-back-svg {
+  display: block;
+}
+
+.testing-back:hover {
+  opacity: 0.85;
+}
 
 
 /* Optional hover polish */
@@ -810,9 +867,10 @@ body {
   border-color: rgba(0, 0, 0, 0.32);
 }
 
+/* responsive tweaks */
 @media (max-width: 60rem) {
   .testing-options {
-    --gap: 3rem; /* keeps labels + tiles in sync */
+    --gap: 3rem;
   }
 
   .testing-choice-label {
@@ -826,17 +884,39 @@ body {
     --gap: 3.25rem;
   }
 
-  /* make callouts go straight up and straight down */
+  /* stack mode: make arms go up/down */
   .testing__choice--camera {
     --callout-angle: -90deg;
-    --label-align: center;
-    --label-items: center;
+    --side: 1;
   }
 
   .testing__choice--gallery {
     --callout-angle: 90deg;
-    --label-align: center;
-    --label-items: center;
+    --side: 1;
+  }
+  /* kill the connector line + dot */
+  .testing-choice-connector {
+    display: none !important;
+  }
+  .testing-choice-connector::after {
+    display: none !important;
+  }
+
+  /* stop rotating the callout system and center it under the icon */
+  .testing-choice-callout {
+    left: 50% !important;
+    top: 100% !important;
+    transform: translate(-50%, 0) !important;
+  }
+
+  /* place label centered under icon */
+  .testing-choice-label {
+    position: static !important;
+    transform: none !important;
+    transform-origin: center !important;
+
+    margin-top: 0.9rem;
+    align-items: center !important;
+    text-align: center !important;
   }
 }
-
