@@ -920,3 +920,270 @@ body {
     text-align: center !important;
   }
 }
+
+/* ===================== */
+/* Camera Page (Phase 2) */
+/* ===================== */
+
+.camera {
+  flex: 1;
+  min-height: calc(100vh - 4.5rem);
+  position: relative;
+}
+
+/* Loading / analyzing */
+.camera-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+  z-index: 3;
+}
+
+.camera-denied {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.25rem;
+  z-index: 3;
+}
+
+
+
+.camera-loading-text {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.75);
+}
+
+/* rotating dotted diamonds */
+.camera-diamonds {
+  position: relative;
+  width: clamp(10rem, 18vw, 16rem);
+  height: clamp(10rem, 18vw, 16rem);
+}
+
+.camera-diamond {
+  position: absolute;
+  inset: 0;
+  border: 0.125rem dotted rgba(0, 0, 0, 0.18);
+  transform: rotate(45deg);
+}
+
+@keyframes cameraSpin {
+  from { transform: rotate(45deg); }
+  to { transform: rotate(405deg); }
+}
+@keyframes cameraSpinReverse {
+  from { transform: rotate(45deg); }
+  to { transform: rotate(-315deg); }
+}
+
+.camera-diamond--outer {
+  animation: cameraSpin 48s linear infinite;
+  opacity: 0.5;
+}
+.camera-diamond--mid {
+  inset: 10%;
+  animation: cameraSpinReverse 78s linear infinite;
+  opacity: 0.55;
+}
+.camera-diamond--inner {
+  inset: 20%;
+  animation: cameraSpin 64s linear infinite;
+  opacity: 0.6;
+}
+
+/* Stage wrapper */
+.camera-stage {
+  min-height: calc(100vh - 4.5rem);
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+/* Video area */
+.camera-video {
+  position: absolute;
+  inset: 0;
+  background: #d0d0d0; /* placeholder gray */
+}
+
+/* placeholder blocks (we’ll replace with <video> + captured canvas) */
+.camera-video-placeholder,
+.camera-captured-placeholder {
+  position: absolute;
+  inset: 0;
+  background: #cfcfcf;
+}
+
+/* TAKE PICTURE button (right center-ish) */
+.camera-take {
+  position: absolute;
+  right: 3rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.camera-take-text {
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.camera-take-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.8);
+  display: grid;
+  place-items: center;
+}
+
+.camera-take-btn-inner {
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 999px;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.8);
+}
+
+/* Great shot text */
+.camera-greatshot {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Tips at bottom */
+.camera-tips {
+  position: absolute;
+  left: 50%;
+  bottom: 2.5rem;
+  transform: translateX(-50%);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.camera-tips-title {
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.camera-tips-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.camera-tips-list li {
+  font-size: 0.5625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Back / Proceed nav */
+.camera-nav {
+  position: absolute;
+  bottom: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.camera-nav--left {
+  left: 2.5rem;
+}
+
+.camera-nav--right {
+  right: 2.5rem;
+}
+
+.camera-nav-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.camera-nav-diamond {
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.85);
+  transform: rotate(45deg);
+  display: grid;
+  place-items: center;
+}
+
+.camera-nav-arrow {
+  width: 0;
+  height: 0;
+  transform: rotate(-45deg);
+  border-top: 0.4rem solid transparent;
+  border-bottom: 0.4rem solid transparent;
+}
+
+.camera-nav-arrow--left {
+  border-right: 0.55rem solid rgba(255, 255, 255, 0.9);
+  margin-left: -0.1rem;
+}
+
+.camera-nav-arrow--right {
+  border-left: 0.55rem solid rgba(255, 255, 255, 0.9);
+  margin-right: -0.1rem;
+}
+
+/* Responsive: tighten button spacing */
+@media (max-width: 48rem) {
+  .camera-take {
+    right: 1.25rem;
+  }
+
+  .camera-nav--left {
+    left: 1.25rem;
+  }
+
+  .camera-nav--right {
+    right: 1.25rem;
+  }
+
+  .camera-tips {
+    bottom: 1.75rem;
+    padding: 0 1rem;
+  }
+
+  .camera-tips-list {
+    gap: 0.75rem;
+  }
+}
