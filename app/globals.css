@@ -634,26 +634,43 @@ body {
 
 /* Two diamonds side-by-side */
 .testing-options {
+  --gap: clamp(6rem, 12vw, 16rem);
+
   margin-top: clamp(2.5rem, 5vw, 4rem);
   display: flex;
   align-items: center;
   justify-content: center;
-    gap: clamp(6rem, 12vw, 16rem);
-
+  gap: var(--gap);
 }
+
 
 /* Button reset + sizing */
 .testing-choice {
+  /* one source of truth */
+  --tile: clamp(18rem, 28vw, 30.5rem);
+  --icon: calc(var(--tile) * 0.28); /* tweak 0.26–0.30 if needed */
+
+  width: var(--tile);
+  height: var(--tile);
+
   position: relative;
-  width: clamp(18rem, 28vw, 30.5rem);
-  height: clamp(18rem, 28vw, 30.5rem);
   background: transparent;
   border: none;
   cursor: pointer;
   padding: 0;
   display: grid;
   place-items: center;
+
+  /* defaults */
+  --label-align: left;
+  --label-items: flex-start;
 }
+
+.testing-choice-icon svg {
+  width: var(--icon);
+  height: var(--icon);
+}
+
 
 /* Outer + inner diamond frames */
 .testing-choice-frame {
@@ -664,10 +681,31 @@ body {
   pointer-events: none;
 }
 
-.testing-choice-frame-inner {
+
+@keyframes testing-spin {
+  from { transform: rotate(45deg); }
+  to   { transform: rotate(405deg); }
+}
+
+@keyframes testing-spin-reverse {
+  from { transform: rotate(45deg); }
+  to   { transform: rotate(-315deg); }
+}
+
+/* outer frame rotation */
+.testing-choice-frame {
+  animation: testing-spin 50s linear infinite;
+  opacity: 0.50;
+}
+
+/* inner frame: make it actually inset + opposite rotation */
+.testing-choice-frame.testing-choice-frame-inner {
   inset: 12%;
   opacity: 0.7;
+  animation: testing-spin-reverse 90s linear infinite;
 }
+
+
 
 /* Center icon */
 .testing-choice-icon {
@@ -678,30 +716,94 @@ body {
   color: rgba(0, 0, 0, 0.9);
 }
 
-/* Label sits to the right of each diamond */
+.testing-choice {
+  --callout-angle: 0deg;
+  --connector-start: calc(var(--icon) * 0.55);
+  --connector-len: calc(var(--icon) * 1.15);
+  --label-gap: 0.75rem;
+}
+
+/* anchor everything from tile center */
+.testing-choice-callout {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  z-index: 3;
+  pointer-events: none;
+
+  transform: translate(-50%, -50%) rotate(var(--callout-angle));
+  transform-origin: 0 0;
+}
+
+/* connector line */
+.testing-choice-connector {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 1px;
+  width: var(--connector-len);
+  background: #1a1b1c;
+  transform: translateX(var(--connector-start));
+  transform-origin: 0% 50%;
+}
+
+/* dot */
+.testing-choice-connector::after {
+  content: "";
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  width: 0.35rem;
+  height: 0.35rem;
+  border: 1px solid #1a1b1c;
+  border-radius: 999px;
+  background: #fff;
+  transform: translate(-50%, -50%);
+}
+
+/* label at end of line */
 .testing-choice-label {
   position: absolute;
-  left: calc(100% - 1.25rem);
-  top: 50%;
-  transform: translateY(-50%);
-  text-align: left;
+  left: calc(var(--connector-start) + var(--connector-len) + var(--label-gap));
+  top: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(0, 0, 0, 0.9);
   line-height: 1.2;
   white-space: nowrap;
+
+  text-align: var(--label-align);
+  align-items: var(--label-items);
+
+  transform: translateY(-50%) rotate(calc(-1 * var(--callout-angle)));
+  transform-origin: left center;
 }
 
-.testing-choice-label-top {
-  display: block;
-  opacity: 0.65;
-  margin-bottom: 0.25rem;
+/* directions */
+.testing__choice--camera {
+  --callout-angle: -35deg;
+  --label-align: left;
+  --label-items: flex-start;
 }
 
-.testing-choice-label-bottom {
-  display: block;
+.testing__choice--gallery {
+  --callout-angle: 215deg;
+  --label-align: right;
+  --label-items: flex-end;
 }
+
+
+
+
+
 
 /* Optional hover polish */
 .testing-choice:hover .testing-choice-frame {
@@ -710,30 +812,31 @@ body {
 
 @media (max-width: 60rem) {
   .testing-options {
-    gap: 3rem;
+    --gap: 3rem; /* keeps labels + tiles in sync */
   }
 
   .testing-choice-label {
-    left: calc(100% - 0.75rem);
     font-size: 0.7rem;
   }
 }
 
 @media (max-width: 48rem) {
-  .testing-kicker {
-    top: 5rem;
-    left: 1.5rem;
-  }
-
   .testing-options {
     flex-direction: column;
-    gap: 3.25rem;
+    --gap: 3.25rem;
   }
 
-  .testing-choice-label {
-    left: 50%;
-    top: calc(100% + 0.5rem);
-    transform: translateX(-50%);
-    text-align: center;
+  /* make callouts go straight up and straight down */
+  .testing__choice--camera {
+    --callout-angle: -90deg;
+    --label-align: center;
+    --label-items: center;
+  }
+
+  .testing__choice--gallery {
+    --callout-angle: 90deg;
+    --label-align: center;
+    --label-items: center;
   }
 }
+
