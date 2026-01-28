@@ -1322,6 +1322,10 @@ body {
   color: #fff;
 }
 
+.demo-row.is-active .demo-row-left {
+  color: #fff;
+}
+
 .demo-row-btn {
   width: 100%;
   display: flex;
@@ -1359,28 +1363,26 @@ body {
   color: rgba(0, 0, 0, 0.9);
 }
 
-/* big circle meter */
+
+
+/* SVG meter (dynamic circle) */
 .demo-meter {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2.5rem 0 1.5rem;
 }
 
-.demo-meter-circle {
-  width: clamp(14rem, 22vw, 18rem);
-  height: clamp(14rem, 22vw, 18rem);
-  border: 0.125rem solid rgba(0, 0, 0, 0.9);
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
+.demo-meter-svg {
+  display: block;
 }
 
+/* keep the % text identical to your previous styling */
 .demo-meter-value {
   font-size: 1.25rem;
   letter-spacing: 0.02em;
-  color: rgba(0, 0, 0, 0.9);
+  fill: #1a1b1c;
 }
+
 
 .demo-hint {
   margin: 0;
@@ -1464,6 +1466,53 @@ body {
   font-size: 0.75rem;
   opacity: 0.7;
 }
+
+/* diamond container */
+.demo-bullet {
+  position: relative;
+  width: 0.75rem;
+  height: 0.75rem;
+  display: inline-block;
+}
+
+/* outer diamond (always visible) */
+.demo-diamond {
+  position: absolute;
+  inset: 0;
+  border: 0.0625rem solid rgba(0, 0, 0, 0.7);
+  transform: rotate(45deg);
+  border-radius: 0.0625rem;
+}
+
+/* inner diamond (only active row) */
+.demo-diamond-inner {
+  position: absolute;
+  inset: 0.1875rem; /* controls inner diamond size */
+  background: rgba(0, 0, 0, 0.9);
+  transform: rotate(45deg);
+  border-radius: 0.0625rem;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+/* active row = inner diamond appears + text turns white */
+/* active row = inner diamond appears */
+.demo-row.is-active .demo-diamond-inner {
+  opacity: 1;
+  background: #fff;            /* <-- key fix */
+}
+
+/* keep outer diamond visible on dark row */
+.demo-row.is-active .demo-diamond {
+  border-color: #fff;
+}
+
+
+.demo-row.is-active .demo-row-left,
+.demo-row.is-active .demo-row-right {
+  color: #fff;
+}
+
 
 .demo-row-right {
   font-size: 0.75rem;

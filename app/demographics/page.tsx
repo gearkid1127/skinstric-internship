@@ -152,6 +152,9 @@ export default function DemographicsPage() {
     router.push("/analysis");
   };
 
+  const isActiveRow = (label: string) => panel.selected === label;
+
+
   return (
     <section className="demo">
       <header className="demo-header">
@@ -230,12 +233,53 @@ export default function DemographicsPage() {
             <p className="demo-selected">{panel.selected}</p>
           </div>
 
-          <div className="demo-meter" aria-hidden="true">
-            <div className="demo-meter-circle">
-              <span className="demo-meter-value">
-                {panel.selectedValue.toFixed(0)}%
-              </span>
-            </div>
+          <div className="demo-meter">
+            {(() => {
+              const radius = 120;
+              const stroke = 2;
+              const normalizedRadius = radius - stroke * 2;
+              const circumference = normalizedRadius * 2 * Math.PI;
+              const percent = panel.selectedValue ?? 0;
+              const strokeDashoffset =
+                circumference - (percent / 100) * circumference;
+
+              return (
+                <svg
+                  height={radius * 2}
+                  width={radius * 2}
+                  className="demo-meter-svg"
+                >
+                  <circle
+                    stroke="#e5e5e5"
+                    fill="transparent"
+                    strokeWidth={stroke}
+                    r={normalizedRadius}
+                    cx={radius}
+                    cy={radius}
+                  />
+                  <circle
+                    stroke="#111"
+                    fill="transparent"
+                    strokeWidth={stroke}
+                    strokeDasharray={`${circumference} ${circumference}`}
+                    strokeDashoffset={strokeDashoffset}
+                    r={normalizedRadius}
+                    cx={radius}
+                    cy={radius}
+                    style={{ transition: "stroke-dashoffset 0.4s ease" }}
+                  />
+                  <text
+                    x="50%"
+                    y="50%"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="demo-meter-value"
+                  >
+                    {percent.toFixed(0)}%
+                  </text>
+                </svg>
+              );
+            })()}
           </div>
 
           <p className="demo-hint">
@@ -254,14 +298,23 @@ export default function DemographicsPage() {
 
           <ul className="demo-list">
             {panel.options.map((o) => (
-              <li key={o.label} className="demo-row">
+              <li
+                key={o.label}
+                className={`demo-row ${
+                  o.label === panel.selected ? "is-active" : ""
+                }`}
+              >
                 <button
                   type="button"
-                  className="demo-row-btn"
+                  className={`demo-row-btn ${isActiveRow(o.label) ? "is-active" : ""}`}
                   onClick={() => onPick(o.label, o.value)}
                 >
                   <span className="demo-row-left">
-                    <span className="demo-bullet">◇</span>
+                    <span className="demo-bullet" aria-hidden="true">
+                      <span className="demo-diamond" />
+                      <span className="demo-diamond-inner" />
+                    </span>
+
                     {o.label}
                   </span>
                   <span className="demo-row-right">{o.value.toFixed(2)}%</span>
