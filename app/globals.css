@@ -1313,6 +1313,32 @@ body {
   color: #fff;
 }
 
+.demo-row.is-active {
+  background: #1a1b1c;
+  color: #fff;
+}
+.demo-row.is-active .demo-row-right,
+.demo-row.is-active .demo-bullet {
+  color: #fff;
+}
+
+.demo-row-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+}
+
+
+
 /* CENTER */
 .demo-center {
   flex: 1;

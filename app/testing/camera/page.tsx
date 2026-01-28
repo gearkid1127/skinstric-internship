@@ -155,13 +155,30 @@ export default function TestingCameraPage() {
     setState("captured");
   };
 
-  const onProceed = () => {
-    stopStream();
-    setState("analyzing");
+  const captureToBase64 = () => {
+    const video = videoRef.current;
+    if (!video) return null;
 
-    window.setTimeout(() => {
-      router.push("/demographics"); // you can change this later
-    }, 900);
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth || 1280;
+    canvas.height = video.videoHeight || 720;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // API wants ONLY the base64 string (no "data:image/...;base64," prefix)
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
+    return dataUrl.split(",")[1] ?? null;
+  };
+
+  const onProceed = () => {
+    const base64 = captureToBase64();
+    if (base64) sessionStorage.setItem("skinstric:image_base64", base64);
+
+    stopStream();
+    router.push("/demographics");
   };
 
   return (
