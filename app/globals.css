@@ -57,7 +57,7 @@ body {
 
 /* Header overlays every page (exemplar behavior) */
 .app-header {
-  position: fixed;
+  
   top: 0;
   left: 0;
   right: 0;
@@ -1430,7 +1430,7 @@ body {
 
 .demo-header {
   padding: 1.25rem 2.25rem 0;
-  margin-top: 3rem;
+  
 }
 
 .demo-breadcrumb {
@@ -1804,6 +1804,123 @@ body {
     margin-top: 1.5rem;
   }
 }
+
+/* ========================= */
+/* Demographics skeleton      */
+/* ========================= */
+
+.demo-skel-surface {
+  position: relative;
+  overflow: hidden;
+}
+
+.demo-skel-surface::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(0,0,0,0) 0%,
+    rgba(0,0,0,0.05) 50%,
+    rgba(0,0,0,0) 100%
+  );
+  animation: demo-shimmer 1.1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes demo-shimmer {
+  to { transform: translateX(100%); }
+}
+
+.demo-skel-tab,
+.demo-skel-line,
+.demo-skel-pill,
+.demo-skel-num,
+.demo-skel-btn,
+.demo-skel-back {
+  background: rgba(0, 0, 0, 0.06);
+  border: 0.0625rem solid rgba(0, 0, 0, 0.10);
+}
+
+.demo-skel-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.demo-skel-tab {
+  height: 4.25rem;
+}
+
+.demo-skel-back {
+  margin-top: auto;
+  height: 2.75rem;
+  width: 9.5rem;
+}
+
+.demo-skel-line {
+  height: 1rem;
+  width: 12rem;
+}
+
+.demo-skel-line--lg {
+  height: 1.5rem;
+  width: 14rem;
+}
+
+.demo-skel-line--sm {
+  height: 0.875rem;
+  width: 18rem;
+}
+
+.demo-skel-line--center {
+  margin: 0.75rem auto 0;
+}
+
+.demo-skel-circle {
+  width: 15.5rem;
+  height: 15.5rem;
+  margin: 2rem auto 1.25rem;
+  border-radius: 999rem;
+  background: rgba(0, 0, 0, 0.03);
+  border: 0.125rem solid rgba(0, 0, 0, 0.08);
+}
+
+.demo-skel-list {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.demo-skel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.demo-skel-pill {
+  height: 0.9rem;
+  width: 9.5rem;
+}
+
+.demo-skel-num {
+  height: 0.9rem;
+  width: 4rem;
+}
+
+.demo-skel-btn {
+  height: 2.5rem;
+  width: 7.25rem;
+}
+
+.demo-skel-btn--ghost {
+  background: rgba(0,0,0,0.02);
+}
+
 
 /* ========================= */
 /* Analysis (between capture -> demographics) */

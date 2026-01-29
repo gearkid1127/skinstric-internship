@@ -154,6 +154,75 @@ export default function DemographicsPage() {
 
   const isActiveRow = (label: string) => panel.selected === label;
 
+  if (loading) {
+    return (
+      <section className="demo">
+        <header className="demo-header">
+          <p className="demo-kicker">A.I. ANALYSIS</p>
+          <h1 className="demo-title">DEMOGRAPHICS</h1>
+          <p className="demo-sub">PREDICTED RACE & AGE</p>
+        </header>
+
+        <div className="demo-shell">
+          {/* Left skeleton */}
+          <aside className="demo-left demo-skel-surface">
+            <div className="demo-skel-tabs">
+              <div className="demo-skel-tab" />
+              <div className="demo-skel-tab" />
+              <div className="demo-skel-tab" />
+            </div>
+
+            <div className="demo-skel-back" />
+          </aside>
+
+          {/* Center skeleton */}
+          <main className="demo-center demo-skel-surface">
+            <div className="demo-skel-line demo-skel-line--lg" />
+            <div className="demo-skel-circle" />
+            <div className="demo-skel-line demo-skel-line--sm demo-skel-line--center" />
+          </main>
+
+          {/* Right skeleton */}
+          <aside className="demo-right demo-skel-surface">
+            <div className="demo-right-head">
+              <span className="demo-right-title">RACE</span>
+              <span className="demo-right-title">A.I. CONFIDENCE</span>
+            </div>
+
+            <div className="demo-skel-list">
+              {Array.from({ length: 7 }).map((_, i) => (
+                <div key={i} className="demo-skel-row">
+                  <div className="demo-skel-pill" />
+                  <div className="demo-skel-num" />
+                </div>
+              ))}
+            </div>
+
+            <div className="demo-actions">
+              <div className="demo-skel-btn demo-skel-btn--ghost" />
+              <div className="demo-skel-btn" />
+            </div>
+          </aside>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="demo">
+        <header className="demo-header">
+          <p className="demo-kicker">A.I. ANALYSIS</p>
+          <h1 className="demo-title">DEMOGRAPHICS</h1>
+          <p className="demo-sub">PREDICTED RACE & AGE</p>
+        </header>
+
+        <div className="demo-shell">
+          <p style={{ padding: "2rem" }}>{error}</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="demo">
