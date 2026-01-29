@@ -6,15 +6,23 @@ import { useRouter } from "next/navigation";
 export default function AnalysisPage() {
   const router = useRouter();
 
-  useEffect(() => {
-    const base64 = sessionStorage.getItem("skinstric:image_base64");
-    if (!base64) router.push("/testing"); // or wherever your entry point is
-  }, [router]);
+    const [hasDemographics, setHasDemographics] = useState(false);
 
-  const [hasDemographics] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return Boolean(sessionStorage.getItem("skinstric:demographics"));
+  useEffect(() => {
+  const base64 = sessionStorage.getItem("skinstric:image_base64");
+  if (!base64) {
+    router.push("/testing");
+    return;
+  }
+
+  const hasDemo = Boolean(sessionStorage.getItem("skinstric:demographics"));
+
+  // ✅ avoids eslint warning + hydration issues
+  Promise.resolve().then(() => {
+    setHasDemographics(hasDemo);
   });
+}, [router]);
+
 
   return (
     <section className="analysis">
