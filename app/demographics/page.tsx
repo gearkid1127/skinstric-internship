@@ -158,9 +158,6 @@ export default function DemographicsPage() {
   return (
     <section className="demo">
       <header className="demo-header">
-        <p className="demo-breadcrumb">
-          SKINSTRIC&nbsp;&nbsp;[&nbsp;ANALYSIS&nbsp;]
-        </p>
         <p className="demo-kicker">A.I. ANALYSIS</p>
         <h1 className="demo-title">DEMOGRAPHICS</h1>
         <p className="demo-sub">PREDICTED RACE & AGE</p>

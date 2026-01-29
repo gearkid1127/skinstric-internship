@@ -20,37 +20,85 @@ body {
 /* LAYOUT */
 /* ===================== */
 
+/* ===================== */
+/* LAYOUT */
+/* ===================== */
+
 .app-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
+.app-logo {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #111;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  mix-blend-mode: normal; /* ensures readability over hero graphics */
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* [ INTRO ] styling like the exemplar */
+.testing-kicker-bracket {
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  color: #777;
+  margin-left: 1rem;
+}
+
+
+/* Header overlays every page (exemplar behavior) */
 .app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   padding: 1.25rem 2rem;
-  border-bottom: 1px solid #eaeaea;
+
+  background: transparent;
+  border-bottom: none;
+
+  /* header shouldn't block page interactions */
+  pointer-events: none;
 }
 
-.app-logo {
-  font-size: 1.25rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-.app-header-action {
-  font-size: 0.9rem;
-  color: #555;
-  text-decoration: none;
-  cursor: pointer;
+/* allow clicks on the actual header items */
+.app-header > * {
+  pointer-events: auto;
 }
 
 .page-content {
   flex: 1;
   display: flex;
+
+  /* lets hero/camera/etc take full viewport height */
+  min-height: 100vh;
 }
+
+.app-header-action {
+  background: #111;
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 
 /* ===================== */
 /* HERO (Home Page) */
@@ -64,7 +112,7 @@ body {
 .hero-frame {
   position: relative;
   width: 100%;
-  height: calc(100vh - 4.5rem);
+  height: 100vh;
   min-height: 40rem;
   overflow: hidden;
   display: flex;
@@ -239,6 +287,163 @@ body {
   font-size: 0.95rem;
 }
 
+/* Mobile-first: show center CTA, hide side + bottom-left */
+.hero-side,
+.hero-bottom-left {
+  display: none;
+}
+
+/* (You have this element in JSX; make sure it's controlled) */
+.hero-description {
+  margin-top: 1.25rem;
+  max-width: 44rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.hero-button {
+  display: inline-flex; /* explicitly on for mobile */
+}
+
+/* Desktop: show side + bottom-left, hide center description + CTA button */
+@media (min-width: 64rem) {
+  .hero-side,
+  .hero-bottom-left {
+    display: inline-flex;
+  }
+
+  .hero-bottom-left {
+    display: block; /* override inline-flex */
+  }
+
+  .hero-description,
+  .hero-button {
+    display: none;
+  }
+}
+
+/* Tablet: bring the two dotted squares together into one centered diamond */
+/* ===================== */
+/* TABLET (<= 768px) */
+/* merge edge squares into center diamond */
+/* ===================== */
+
+@media (max-width: 768px) {
+  /* hide side arrows on tablet/mobile */
+  .hero-side {
+    display: none;
+  }
+
+  /* center the dotted squares */
+  .frame-left,
+  .frame-right {
+    top: 50%;
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  /* outer diamond slightly larger */
+  .frame-left {
+    width: clamp(22rem, 70vw, 30rem);
+    height: clamp(22rem, 70vw, 30rem);
+    opacity: 0.5;
+  }
+
+  /* inner diamond slightly smaller */
+  .frame-right {
+    width: clamp(18rem, 58vw, 25rem);
+    height: clamp(18rem, 58vw, 25rem);
+    opacity: 0.35;
+  }
+
+  /* tighten center content */
+  .hero-content {
+    max-width: 26rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2.4rem, 6vw, 3.6rem);
+    line-height: 1.05;
+  }
+
+  .hero-description {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    max-width: 22rem;
+  }
+
+  /* bottom-left copy shouldn't show on tablet */
+  .hero-bottom-left {
+    display: none;
+  }
+}
+
+/* ===================== */
+/* HERO hover interaction (desktop only) */
+/* ===================== */
+
+@media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
+  /* smooth hero movement + alignment */
+  .hero-content {
+    transition: transform 350ms ease, text-align 350ms ease;
+    will-change: transform;
+  }
+
+  /* smooth fade for side controls */
+  .hero-side {
+    transition: opacity 350ms ease;
+    will-change: opacity;
+  }
+
+  /* ========================= */
+  /* Hover TAKE TEST (right) */
+  /* ========================= */
+
+  /* fade opposite square + label */
+  .hero-frame:has(.hero-side-right:hover) .frame-left,
+  .hero-frame:has(.hero-side-right:hover) .hero-side-left {
+    opacity: 0;
+  }
+
+  /* move + align content left */
+  .hero-frame:has(.hero-side-right:hover) .hero-content {
+    transform: translateX(-25rem);
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  /* ========================= */
+  /* Hover DISCOVER A.I. (left) */
+  /* ========================= */
+
+  /* fade opposite square + label */
+  .hero-frame:has(.hero-side-left:hover) .frame-right,
+  .hero-frame:has(.hero-side-left:hover) .hero-side-right {
+    opacity: 0;
+  }
+
+  /* move + align content right */
+  .hero-frame:has(.hero-side-left:hover) .hero-content {
+    transform: translateX(25rem);
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  /* keep description width elegant when aligned */
+  .hero-frame:has(.hero-side-right:hover) .hero-description,
+  .hero-frame:has(.hero-side-left:hover) .hero-description {
+    max-width: 34rem;
+  }
+}
+
+
+
+
+
 /* ===================== */
 /* Enter Page */
 /* ===================== */
@@ -251,7 +456,7 @@ body {
 .enter-frame {
   position: relative;
   width: 100%;
-  min-height: calc(100vh - 4.5rem);
+  min-height: 100vh;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -597,7 +802,7 @@ body {
 .testing-frame {
   position: relative;
   width: 100%;
-  min-height: calc(100vh - 4.5rem);
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -927,7 +1132,7 @@ body {
 
 .camera {
   flex: 1;
-  min-height: calc(100vh - 4.5rem);
+  min-height: 100vh;
   position: relative;
 }
 
@@ -1002,7 +1207,7 @@ body {
 
 /* Stage wrapper */
 .camera-stage {
-  min-height: calc(100vh - 4.5rem);
+  min-height: 100vh;
   position: relative;
   display: flex;
   align-items: stretch;
@@ -1211,7 +1416,7 @@ body {
 
 .demo {
   flex: 1;
-  min-height: calc(100vh - 4.5rem);
+  min-height: 100vh;
   background: #fff;
 }
 
@@ -1225,6 +1430,7 @@ body {
 
 .demo-header {
   padding: 1.25rem 2.25rem 0;
+  margin-top: 3rem;
 }
 
 .demo-breadcrumb {
@@ -1240,12 +1446,18 @@ body {
   gap: 2.5rem;
   padding: 1.75rem 2.25rem 2.25rem;
   align-items: stretch;
+  margin-top: 2.5rem;
 }
 
 /* LEFT */
 .demo-left {
   width: 18rem;
   flex: 0 0 18rem;
+  margin-top: -1rem;
+  
+
+  background: rgba(0, 0, 0, 0.02);
+  padding: 1rem;
 }
 
 .demo-kicker {
@@ -1275,6 +1487,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  
 }
 
 .demo-tab {
@@ -1347,8 +1560,12 @@ body {
 .demo-center {
   flex: 1;
   min-width: 0;
-  border-top: 0.0625rem solid rgba(0, 0, 0, 0.35);
-  padding-top: 1.25rem;
+
+  background: rgba(191, 188, 188, 0.15);
+  border: 0.0625rem solid rgba(0, 0, 0, 0.02);
+  border-top: 2px solid black;
+
+  padding: 1.25rem;
   position: relative;
 }
 
@@ -1396,7 +1613,14 @@ body {
   position: absolute;
   left: 0;
   bottom: 0;
-  transform: translateY(3.25rem);
+
+  /* was pushing it down */
+  transform: none;
+
+  /* pull it up a bit */
+  margin-bottom: 1.75rem;
+  margin-left: 3rem;
+
   border: none;
   background: transparent;
   cursor: pointer;
@@ -1407,12 +1631,20 @@ body {
   color: rgba(0, 0, 0, 0.75);
 }
 
+
 /* RIGHT */
 .demo-right {
   width: 18rem;
   flex: 0 0 18rem;
-  border-left: 0.0625rem solid rgba(0, 0, 0, 0.18);
-  padding-left: 1.25rem;
+
+  background: rgba(179, 176, 176, 0.12);
+  border: 0.0625rem solid rgba(0, 0, 0, 0.12);
+  border-top: 2px solid black;
+
+  
+  border-left: 0.0625rem solid rgba(0, 0, 0, 0.12);
+
+  padding: 1rem;
   display: flex;
   flex-direction: column;
 }
@@ -1578,7 +1810,7 @@ body {
 /* ========================= */
 
 .analysis {
-  min-height: calc(100vh - 4.5rem);
+  min-height: 100vh;
   background: #fff;
 
   display: flex;
@@ -1591,6 +1823,7 @@ body {
 
 .analysis-header {
   max-width: 22rem;
+  margin-top: 4rem;
 }
 
 .analysis-breadcrumb {
@@ -1735,4 +1968,58 @@ body {
 /* Make the centering container definitely full-width */
 .analysis-diamondWrap {
   width: 100%;
+}
+
+/* ========================= */
+/* Analysis hover: rings pop + hovered tile stands out */
+/* ========================= */
+
+@media (hover: hover) and (pointer: fine) {
+  /* Rings start hidden */
+  .analysis-ring {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(45deg) scale(0.985);
+    transition:
+      opacity 220ms ease,
+      transform 220ms ease;
+    will-change: opacity, transform;
+  }
+
+  /* Stagger (one at a time) */
+  .analysis-ring--1 { transition-delay: 0ms; }
+  .analysis-ring--2 { transition-delay: 70ms; }
+  .analysis-ring--3 { transition-delay: 140ms; }
+  .analysis-ring--4 { transition-delay: 210ms; }
+
+  /* When hovering any tile, reveal rings */
+  .analysis:has(.analysis-tile:hover) .analysis-ring {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(45deg) scale(1);
+  }
+
+  /* Tile polish */
+  .analysis-tile {
+    transition:
+      transform 180ms ease,
+      background-color 180ms ease,
+      box-shadow 180ms ease,
+      opacity 180ms ease,
+      filter 180ms ease;
+    will-change: transform;
+    position: relative;
+  }
+
+  /* Hovered tile stands out */
+  .analysis-tile:hover {
+    transform: scale(1.035);
+    background: rgba(0, 0, 0, 0.14);
+    box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.08);
+    z-index: 3;
+    filter: contrast(1.05);
+  }
+
+  /* Optional: slightly de-emphasize the others */
+  .analysis:has(.analysis-tile:hover) .analysis-tile:not(:hover) {
+    opacity: 0.78;
+  }
 }

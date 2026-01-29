@@ -19,14 +19,9 @@ export default function AnalysisPage() {
   return (
     <section className="analysis">
       <header className="analysis-header">
-        <p className="analysis-breadcrumb">
-          SKINSTRIC&nbsp;&nbsp;[&nbsp;ANALYSIS&nbsp;]
-        </p>
-
         <p className="analysis-kicker">A.I. ANALYSIS</p>
         <p className="analysis-sub">
-          A.I. HAS ESTIMATED THE FOLLOWING.
-          <br />
+          A.I. HAS ESTIMATED THE FOLLOWING. <br />
           FIX ESTIMATED INFORMATION IF NEEDED.
         </p>
       </header>
