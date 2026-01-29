@@ -178,7 +178,8 @@ export default function TestingCameraPage() {
     if (base64) sessionStorage.setItem("skinstric:image_base64", base64);
 
     stopStream();
-    router.push("/demographics");
+    router.push("/analysis");
+
   };
 
   return (

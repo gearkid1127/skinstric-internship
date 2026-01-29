@@ -1572,3 +1572,167 @@ body {
     margin-top: 1.5rem;
   }
 }
+
+/* ========================= */
+/* Analysis (between capture -> demographics) */
+/* ========================= */
+
+.analysis {
+  min-height: calc(100vh - 4.5rem);
+  background: #fff;
+
+  display: flex;
+  flex-direction: column;
+  padding: 2.25rem 2.25rem 1.75rem;
+
+  /* if this is present elsewhere, keep it */
+  overflow: hidden;
+}
+
+.analysis-header {
+  max-width: 22rem;
+}
+
+.analysis-breadcrumb {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.analysis-kicker {
+  margin: 0.75rem 0 0.75rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.analysis-sub {
+  margin: 0;
+  font-size: 0.625rem;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* ✅ centered stage */
+.analysis-diamondWrap {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  position: relative;
+  min-height: 0;
+
+  /* RESET the old absolute-centering stuff */
+  left: auto;
+  top: auto;
+  transform: none;
+  width: auto;
+  height: auto;
+}
+
+
+/* dashed diamond rings */
+.analysis-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--size);
+  height: var(--size);
+  transform: translate(-50%, -50%) rotate(45deg);
+  border: 0.0625rem dashed rgba(0, 0, 0, 0.15);
+}
+
+.analysis-ring--1 { --size: 28rem; }
+.analysis-ring--2 { --size: 24.5rem; }
+.analysis-ring--3 { --size: 21rem; }
+.analysis-ring--4 { --size: 17.5rem; }
+
+/* 4-tile diamond grid */
+.analysis-grid {
+  position: relative; /* sits above rings */
+  width: 13.5rem;
+  height: 13.5rem;
+  transform: rotate(45deg);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.1rem;
+}
+
+.analysis-tile {
+  border: none;
+  background: rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.analysis-tile > span {
+  transform: rotate(-45deg);
+  text-align: center;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.75);
+  line-height: 1.2;
+}
+
+.analysis-tile.is-active {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.analysis-tile.is-complete {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.analysis-tile:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ✅ footer should be normal flow (not absolute) */
+.analysis-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1.5rem;
+
+  /* ✅ IMPORTANT: reset old absolute footer rules */
+  position: static;
+  left: auto;
+  right: auto;
+  bottom: auto;
+}
+
+.analysis-back {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.analysis-summary {
+  cursor: no-drop;
+  border: none;
+}
+
+/* Force Analysis page to span full layout width (in case parent is grid/flex shell) */
+.analysis {
+  width: 100%;
+  max-width: none;
+  justify-self: stretch; /* if parent is grid */
+  align-self: stretch;   /* if parent is flex */
+  grid-column: 1 / -1;   /* if parent is grid with columns */
+}
+
+/* Make the centering container definitely full-width */
+.analysis-diamondWrap {
+  width: 100%;
+}
