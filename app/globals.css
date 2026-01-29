@@ -16,9 +16,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* ===================== */
-/* LAYOUT */
-/* ===================== */
 
 /* ===================== */
 /* LAYOUT */
@@ -1499,6 +1496,14 @@ body {
   cursor: pointer;
 }
 
+.demo-tab:hover {
+  background: rgba(60, 60, 60, 0.15);
+}
+
+.demo-tab.is-active:hover {
+  background: #1a1b1c; /* same as active background */
+}
+
 .demo-tab-top {
   display: block;
   font-size: 0.625rem;
@@ -1606,6 +1611,7 @@ body {
   text-align: center;
   font-size: 0.75rem;
   color: rgba(0, 0, 0, 0.55);
+  margin-top: 1rem;
 }
 
 /* simple back (placeholder for the diamond svg later) */
@@ -1630,6 +1636,7 @@ body {
   text-transform: uppercase;
   color: rgba(0, 0, 0, 0.75);
 }
+
 
 
 /* RIGHT */
@@ -1685,6 +1692,11 @@ body {
 .demo-row:hover {
   background: rgba(0, 0, 0, 0.04);
 }
+
+.demo-row.is-active:hover {
+  background: #1a1b1c; /* same as active background */
+}
+
 
 .demo-row-left {
   display: inline-flex;
