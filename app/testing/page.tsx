@@ -3,9 +3,30 @@
 // ROUTE: /testing
 
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
 
 export default function TestingPage() {
   const router = useRouter();
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = (file: File) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const result = reader.result as string;
+
+      // remove `data:image/...;base64,` prefix
+      const base64 = result.split(",")[1] ?? "";
+      if (!base64) return;
+
+      sessionStorage.setItem("skinstric:image_base64", base64);
+
+      // match your new flow: go to analysis first
+      router.push("/analysis");
+    };
+
+    reader.readAsDataURL(file);
+  };
 
   return (
     <section className="testing">
@@ -16,6 +37,20 @@ export default function TestingPage() {
 
         <div className="testing-center">
           <div className="testing-options" role="list">
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleFile(file);
+
+                // allows picking the same file again later
+                e.currentTarget.value = "";
+              }}
+            />
+
             {/* CAMERA */}
             <button
               type="button"
@@ -87,7 +122,7 @@ export default function TestingPage() {
             <button
               type="button"
               className="testing-choice testing__choice--gallery"
-              onClick={() => router.push("/testing/gallery")}
+              onClick={() => fileRef.current?.click()}
             >
               <span className="testing-choice-frame" aria-hidden="true" />
               <span
