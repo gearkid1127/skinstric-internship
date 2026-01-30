@@ -115,7 +115,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6rem 2rem 5rem;
+  padding: 0rem 2rem 7rem; 
 }
 
 .hero-content {
